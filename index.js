@@ -64,6 +64,7 @@ app.get("/api/health", (req, res) => {
 // Pest Control form submission
 app.post("/pestControl/submit", async (req, res) => {
   console.log("Incoming body:", req.body);
+
   const {
     first_name,
     last_name,
@@ -77,13 +78,21 @@ app.post("/pestControl/submit", async (req, res) => {
     xxTrustedFormCertUrl,
     smid,
     gclid,
+    ip_address: body_ip_address, // IP sent from frontend state mapping
   } = req.body;
+
+  // Use the IP sent from the frontend request body, fallback to client IP if missing
+  const ip_address =
+    body_ip_address ||
+    req.headers["x-forwarded-for"]?.split(",")[0] ||
+    req.ip ||
+    null;
 
   try {
     await pool.query(
       `INSERT INTO pest_control_leads 
-        (first_name, last_name, address, city, email, phone, reason, zipcode, subscribe, trusted_cert_url, smid, gclid)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+        (first_name, last_name, address, city, email, phone, reason, zipcode, subscribe, trusted_cert_url, smid, gclid, ip_address)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
       [
         first_name,
         last_name,
@@ -97,14 +106,16 @@ app.post("/pestControl/submit", async (req, res) => {
         xxTrustedFormCertUrl || null,
         smid || null,
         gclid || null,
+        ip_address,
       ]
     );
-    res.status(200).send("Form data saved successfully!");
+    res.status(200).send("Form data saved successfully with state IP!");
   } catch (err) {
     console.error("DB Error:", err);
     res.status(500).send("Error saving form data");
   }
 });
+
 
 // Home Insurance form submission
 app.post("/Homeinsurance/submit", async (req, res) => {
