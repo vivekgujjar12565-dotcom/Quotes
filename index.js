@@ -162,6 +162,99 @@ app.post("/Homeinsurance/submit", async (req, res) => {
   }
 });
 
+app.post("/Debt/submit", async (req, res) => {
+  console.log("Incoming body:", req.body);
+  const {
+    first_name,
+    last_name,
+    Address,
+    City,
+    email,
+    phone,
+    reason,
+    zipcode,
+    subscribe,
+    xxTrustedFormCertUrl,
+    smid,
+    gclid,
+  } = req.body;
+
+  try {
+    await pool.query(
+      `INSERT INTO Debt_leads 
+        (first_name, last_name, address, city, email, phone, reason, zipcode, subscribe, trusted_cert_url, smid, gclid)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+      [
+        first_name,
+        last_name,
+        Address,
+        City,
+        email,
+        phone,
+        reason,
+        zipcode,
+        !!subscribe,
+        xxTrustedFormCertUrl || null,
+        smid || null,
+        gclid || null,
+      ]
+    );
+    res.status(200).send("Form data saved successfully!");
+  } catch (err) {
+    console.error("DB Error:", err);
+    res.status(500).send("Error saving form data");
+  }
+});
+
+
+app.post("/Water/submit", async (req, res) => {
+  console.log("Incoming body:", req.body);
+  const {
+    first_name,
+    last_name,
+    Address,
+    City,
+    email,
+    phone,
+    reason,
+    zipcode,
+    subscribe,
+    xxTrustedFormCertUrl,
+    smid,
+    gclid,
+  } = req.body;
+
+  try {
+    await pool.query(
+      `INSERT INTO Water_leads 
+        (first_name, last_name, address, city, email, phone, reason, zipcode, subscribe, trusted_cert_url, smid, gclid)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+      [
+        first_name,
+        last_name,
+        Address,
+        City,
+        email,
+        phone,
+        reason,
+        zipcode,
+        !!subscribe,
+        xxTrustedFormCertUrl || null,
+        smid || null,
+        gclid || null,
+      ]
+    );
+    res.status(200).send("Form data saved successfully!");
+  } catch (err) {
+    console.error("DB Error:", err);
+    res.status(500).send("Error saving form data");
+  }
+});
+
+
+
+
+
 // HVAC form submission
 app.post("/HVAC/submit", async (req, res) => {
   console.log("Incoming body:", req.body);
